@@ -12,8 +12,9 @@ Management needs to quickly see where financial performance is deviating from pl
 
 ## 📷 Report Preview
 
-<img width="1513" height="851" alt="report preview 1" src="https://github.com/user-attachments/assets/41205256-fc13-4cf4-a3ab-ad6a8d0253c2" />
-<img width="1512" height="850" alt="report preview 2" src="https://github.com/user-attachments/assets/ac5e0092-1075-4bac-8b1b-55a1a2ae0561" />
+<img width="1107" height="627" alt="image" src="https://github.com/user-attachments/assets/3b6f1dfb-3934-401d-a387-fb4286252052" />
+<img width="1108" height="630" alt="image" src="https://github.com/user-attachments/assets/371a2d6f-1559-403e-a71d-ce0e4e857883" />
+
 
 ## 📊 Key Analytical Areas
 
