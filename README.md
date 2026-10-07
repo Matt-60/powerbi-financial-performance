@@ -28,6 +28,9 @@ Every view can be switched between **MTD / QTD / YTD** and compared against **PY
 
 ## 🏗️ Data Model
 
+<img width="600" height="350" alt="image" src="https://github.com/user-attachments/assets/2ce7b73b-238d-42e9-b2dc-9e1b51d57755" />
+
+
 | Table | Role | Grain |
 |---|---|---|
 | `Actuals` | Fact | Account × month (posting lines only) |
