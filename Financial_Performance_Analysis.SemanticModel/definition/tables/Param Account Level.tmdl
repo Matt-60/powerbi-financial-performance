@@ -1,0 +1,48 @@
+/// Field parameter: P&L hierarchy level on the Overview charts.
+table 'Param Account Level'
+	lineageTag: a2296068-9234-58d3-9d57-3dac497ae0c4
+
+	column 'Account Level'
+		lineageTag: dab6cddf-8523-541c-81ea-7a44cdc3bee2
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Account Level Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Account Level Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Account Level Fields'
+		isHidden
+		lineageTag: 2efd4425-7970-50e5-807b-a30ceeeb54a5
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Account Level Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'Account Level Order'
+		isHidden
+		formatString: 0
+		lineageTag: bd755ca0-efa1-55ff-9d89-13215621da4a
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param Account Level' = calculated
+		mode: import
+		source =
+				{
+				    ("P&L Line", NAMEOF ( 'Account'[P&L Line] ), 0 ),
+				    ("Cost Group", NAMEOF ( 'Account'[Cost Group] ), 1 ),
+				    ("Account", NAMEOF ( 'Account'[Account] ), 2 )
+				}
+

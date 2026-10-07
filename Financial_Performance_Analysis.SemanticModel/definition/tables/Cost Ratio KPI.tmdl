@@ -1,0 +1,27 @@
+/// Slicer: cost ratio shown on the KPI page.
+table 'Cost Ratio KPI'
+	lineageTag: bf98cf0e-0017-5987-9156-5935493459b0
+
+	column 'Cost Ratio KPI'
+		lineageTag: 4c6d621c-1fb6-55d0-a4ea-cb26dc795c34
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cost Ratio KPI]
+		sortByColumn: 'Cost Ratio KPI Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Cost Ratio KPI Order'
+		isHidden
+		formatString: 0
+		lineageTag: 2031cd3c-14dc-53fc-b967-aa6dff8ff428
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cost Ratio KPI Order]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Cost Ratio KPI' = calculated
+		mode: import
+		source = DATATABLE ( "Cost Ratio KPI", STRING, "Cost Ratio KPI Order", INTEGER, { { "Costs to Revenue Ratio", 0 }, { "COGS ratio", 1 }, { "Variable Costs ratio", 2 }, { "OPEX ratio", 3 } } )
+

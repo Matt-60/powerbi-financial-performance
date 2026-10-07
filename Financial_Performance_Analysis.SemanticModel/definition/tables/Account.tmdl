@@ -1,0 +1,121 @@
+/// Chart of accounts: P&L line > cost group > account. Includes subtotal lines (Gross Profit, Contribution Profit, EBITDA).
+table Account
+	lineageTag: 6a58d972-ac92-5668-8013-731c578f6be7
+
+	/// Text of the selected P&L lines / cost groups / accounts, used in chart titles.
+	measure 'Selected Categories' =
+			VAR _hasAccount = ISFILTERED ( 'Account'[Account] )
+			VAR _hasGroup = ISFILTERED ( 'Account'[Cost Group] ) && NOT _hasAccount
+			VAR _hasLine = ISFILTERED ( 'Account'[P&L Line] ) && NOT _hasGroup && NOT _hasAccount
+			VAR _paths =
+			    SUMMARIZE ( 'Account', 'Account'[P&L Line], 'Account'[Cost Group], 'Account'[Account] )
+			VAR _result =
+			    CONCATENATEX (
+			        DISTINCT (
+			            SELECTCOLUMNS (
+			                _paths,
+			                "Path",
+			                SWITCH (
+			                    TRUE (),
+			                    _hasAccount, 'Account'[P&L Line] & " " & UNICHAR ( 8594 ) & " " & 'Account'[Cost Group] & " " & UNICHAR ( 8594 ) & " " & 'Account'[Account] & ",",
+			                    _hasGroup, 'Account'[P&L Line] & " " & UNICHAR ( 8594 ) & " " & 'Account'[Cost Group] & ",",
+			                    _hasLine, 'Account'[P&L Line] & ","
+			                )
+			            )
+			        ),
+			        [Path],
+			        UNICHAR ( 10 )
+			    )
+			RETURN
+			    IF ( _hasAccount || _hasGroup || _hasLine, _result, "All categories" )
+		lineageTag: dcc93faa-3ba5-58f6-904d-cf7dabc27454
+
+	/// Natural key from the general ledger. Negative numbers = subtotal lines.
+	column 'Account Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e44f0a28-1201-5f44-96c9-9f91c6812539
+		summarizeBy: none
+		sourceColumn: Account Number
+
+		annotation SummarizationSetBy = User
+
+	/// Account name, e.g. Revenue (DE).
+	column Account
+		dataType: string
+		lineageTag: f0782633-a6be-5885-a8eb-07475612bc84
+		summarizeBy: none
+		sourceColumn: Account
+
+		annotation SummarizationSetBy = User
+
+	/// P&L statement line: A. Revenue ... G. EBITDA.
+	column 'P&L Line'
+		dataType: string
+		lineageTag: fa351238-a567-5643-8666-0cb45209bee6
+		summarizeBy: none
+		sourceColumn: P&L Line
+
+		annotation SummarizationSetBy = User
+
+	/// Cost group within the P&L line (budget grain).
+	column 'Cost Group'
+		dataType: string
+		lineageTag: a77342d0-725f-5bec-8a83-49942dc73e04
+		summarizeBy: none
+		sourceColumn: Cost Group
+
+		annotation SummarizationSetBy = User
+
+	/// Market for revenue and COGS accounts (DE, PL, NL, Others); other costs are not allocated.
+	column Market
+		dataType: string
+		lineageTag: 10c42028-a08e-5287-bcc3-a8ece83676d4
+		summarizeBy: none
+		sourceColumn: Market
+
+		annotation SummarizationSetBy = User
+
+	/// P&L line | cost group - key to the budget.
+	column 'Group Key'
+		dataType: string
+		isHidden
+		lineageTag: 0e81fa5b-7bc3-585f-8a03-46dc0bfc805e
+		summarizeBy: none
+		sourceColumn: Group Key
+
+		annotation SummarizationSetBy = User
+
+	/// Posting or Subtotal.
+	column 'Line Kind'
+		dataType: string
+		isHidden
+		lineageTag: bf5b85df-b215-5841-b554-78180969a5f7
+		summarizeBy: none
+		sourceColumn: Line Kind
+
+		annotation SummarizationSetBy = User
+
+	partition Account = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(SourceFile), null, true),
+				    ActualsTable = Source{[Item="Actuals",Kind="Table"]}[Data],
+				    PostingAccounts = Table.SelectRows(ActualsTable, each [Account] <> null),
+				    Accounts = Table.Distinct(Table.SelectColumns(PostingAccounts, {"Account", "Name", "Type", "Type1"}), {"Account"}),
+				    // P&L subtotal lines: kept in the dimension so the statement shows them, values come from the [Actuals] measure
+				    SubtotalLines = #table(
+				        type table [Account = Int64.Type, Name = text, Type = text, Type1 = text],
+				        {{-1, null, "C. Gross Profit", null}, {-2, null, "E. Contribution Profit", null}, {-3, null, "G. EBITDA", null}}
+				    ),
+				    Combined = Table.Combine({Table.TransformColumnTypes(Accounts, {{"Account", Int64.Type}, {"Name", type text}, {"Type", type text}, {"Type1", type text}}), SubtotalLines}),
+				    AddedGroupKey = Table.AddColumn(Combined, "Group Key", each [Type] & " | " & (if [Type1] = null then "" else [Type1]), type text),
+				    // market is encoded in revenue / COGS account names, e.g. "Revenue (DE)"
+				    AddedMarket = Table.AddColumn(AddedGroupKey, "Market", each if List.Contains({"A. Revenue", "B. COGS"}, [Type]) then Text.BetweenDelimiters([Name], "(", ")") else "Not allocated", type text),
+				    AddedLineKind = Table.AddColumn(AddedMarket, "Line Kind", each if [Account] < 0 then "Subtotal" else "Posting", type text),
+				    Renamed = Table.RenameColumns(AddedLineKind, {{"Account", "Account Number"}, {"Name", "Account"}, {"Type", "P&L Line"}, {"Type1", "Cost Group"}})
+				in
+				    Renamed
+

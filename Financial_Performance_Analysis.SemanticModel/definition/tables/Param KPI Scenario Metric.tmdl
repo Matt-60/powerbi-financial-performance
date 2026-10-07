@@ -1,0 +1,66 @@
+/// Field parameter: margin / ratio incl. PY and Budget variants for the KPI trend chart.
+table 'Param KPI Scenario Metric'
+	lineageTag: c05d9a35-e54e-5804-9f64-a9fb96a4e6cd
+
+	column 'KPI Scenario Metric'
+		lineageTag: a45b306f-953c-5c8e-b523-00c9f2d560ff
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'KPI Scenario Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'KPI Scenario Metric Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'KPI Scenario Metric Fields'
+		isHidden
+		lineageTag: c4bc9b60-fb96-507f-8307-13d857886f92
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'KPI Scenario Metric Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'KPI Scenario Metric Order'
+		isHidden
+		formatString: 0
+		lineageTag: cdd15125-d512-5fc2-aba4-20ae430bbb6a
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param KPI Scenario Metric' = calculated
+		mode: import
+		source =
+				{
+				    ("Contribution Profit Margin", NAMEOF ( 'Margin KPI Measures'[Contribution Profit Margin] ), 0 ),
+				    ("Contribution Profit Margin BUDGET", NAMEOF ( 'Margin KPI Measures'[Contribution Profit Margin Budget] ), 1 ),
+				    ("Contribution Profit Margin PY", NAMEOF ( 'Margin KPI Measures'[Contribution Profit Margin PY] ), 2 ),
+				    ("EBITDA Margin", NAMEOF ( 'Margin KPI Measures'[EBITDA Margin] ), 3 ),
+				    ("EBITDA Margin BUDGET", NAMEOF ( 'Margin KPI Measures'[EBITDA Margin Budget] ), 4 ),
+				    ("EBITDA Margin PY", NAMEOF ( 'Margin KPI Measures'[EBITDA Margin PY] ), 5 ),
+				    ("Gross Profit Margin", NAMEOF ( 'Margin KPI Measures'[Gross Profit Margin] ), 6 ),
+				    ("Gross Profit Margin BUDGET", NAMEOF ( 'Margin KPI Measures'[Gross Profit Margin Budget] ), 7 ),
+				    ("Gross Profit Margin PY", NAMEOF ( 'Margin KPI Measures'[Gross Profit Margin PY] ), 8 ),
+				    ("COGS ratio", NAMEOF ( 'Cost Ratio KPI Measures'[COGS Ratio] ), 9 ),
+				    ("COGS Ratio BUDGET", NAMEOF ( 'Cost Ratio KPI Measures'[COGS Ratio Budget] ), 10 ),
+				    ("COGS ratio PY", NAMEOF ( 'Cost Ratio KPI Measures'[COGS Ratio PY] ), 11 ),
+				    ("Costs to Revenue Ratio", NAMEOF ( 'Cost Ratio KPI Measures'[Costs to Revenue Ratio] ), 12 ),
+				    ("Costs to Revenue Ratio BUDGET", NAMEOF ( 'Cost Ratio KPI Measures'[Costs to Revenue Ratio Budget] ), 13 ),
+				    ("Costs to Revenue Ratio PY", NAMEOF ( 'Cost Ratio KPI Measures'[Costs to Revenue Ratio PY] ), 14 ),
+				    ("OPEX ratio", NAMEOF ( 'Cost Ratio KPI Measures'[OPEX Ratio] ), 15 ),
+				    ("OPEX Ratio BUDGET", NAMEOF ( 'Cost Ratio KPI Measures'[OPEX Ratio Budget] ), 16 ),
+				    ("OPEX ratio PY", NAMEOF ( 'Cost Ratio KPI Measures'[OPEX Ratio PY] ), 17 ),
+				    ("Variable Costs ratio", NAMEOF ( 'Cost Ratio KPI Measures'[Variable Costs Ratio] ), 18 ),
+				    ("Variable Costs Ratio BUDGET", NAMEOF ( 'Cost Ratio KPI Measures'[Variable Costs Ratio Budget] ), 19 ),
+				    ("Variable Costs ratio PY", NAMEOF ( 'Cost Ratio KPI Measures'[Variable Costs Ratio PY] ), 20 )
+				}
+

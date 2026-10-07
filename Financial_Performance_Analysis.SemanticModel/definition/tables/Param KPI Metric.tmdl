@@ -1,0 +1,52 @@
+/// Field parameter: margin / ratio for the KPI waterfall.
+table 'Param KPI Metric'
+	lineageTag: 919e3440-7144-5e79-a98c-effb42eb8a0c
+
+	column 'KPI Metric'
+		lineageTag: f5345962-d13a-530c-aa65-fab241920029
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'KPI Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'KPI Metric Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'KPI Metric Fields'
+		isHidden
+		lineageTag: 53b1d0c4-8083-5c32-be27-91d69c1304ca
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'KPI Metric Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'KPI Metric Order'
+		isHidden
+		formatString: 0
+		lineageTag: 0a6d6c26-5542-5153-822c-58db9668d680
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param KPI Metric' = calculated
+		mode: import
+		source =
+				{
+				    ("Contribution Profit Margin", NAMEOF ( 'Margin KPI Measures'[Contribution Profit Margin] ), 0 ),
+				    ("EBITDA Margin", NAMEOF ( 'Margin KPI Measures'[EBITDA Margin] ), 1 ),
+				    ("Gross Profit Margin", NAMEOF ( 'Margin KPI Measures'[Gross Profit Margin] ), 2 ),
+				    ("COGS ratio", NAMEOF ( 'Cost Ratio KPI Measures'[COGS Ratio] ), 3 ),
+				    ("Costs to Revenue Ratio", NAMEOF ( 'Cost Ratio KPI Measures'[Costs to Revenue Ratio] ), 4 ),
+				    ("OPEX ratio", NAMEOF ( 'Cost Ratio KPI Measures'[OPEX Ratio] ), 5 ),
+				    ("Variable Costs ratio", NAMEOF ( 'Cost Ratio KPI Measures'[Variable Costs Ratio] ), 6 )
+				}
+

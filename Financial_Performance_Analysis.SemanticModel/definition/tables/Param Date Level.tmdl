@@ -1,0 +1,47 @@
+/// Field parameter: month or quarter axis.
+table 'Param Date Level'
+	lineageTag: 8021dcb4-c76d-5a20-a22a-700df929d847
+
+	column 'Date Level'
+		lineageTag: e728d0c0-70ba-534e-9452-ea33d964a26e
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Date Level Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Date Level Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Date Level Fields'
+		isHidden
+		lineageTag: 322f196b-938d-55a5-affe-2b46a290e406
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Date Level Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'Date Level Order'
+		isHidden
+		formatString: 0
+		lineageTag: 577ff5fc-60dc-5a46-bc9d-77e563625800
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param Date Level' = calculated
+		mode: import
+		source =
+				{
+				    ("Month short", NAMEOF ( 'Date'[Month short] ), 0 ),
+				    ("Quarter", NAMEOF ( 'Date'[Quarter] ), 1 )
+				}
+

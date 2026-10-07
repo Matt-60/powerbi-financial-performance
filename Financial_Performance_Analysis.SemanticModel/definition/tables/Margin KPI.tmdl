@@ -1,0 +1,27 @@
+/// Slicer: margin shown on the KPI page.
+table 'Margin KPI'
+	lineageTag: 5099987b-ebf1-5e69-8ba6-865d14015405
+
+	column 'Margin KPI'
+		lineageTag: 113691e9-d112-5295-b832-e4b97ca47d19
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Margin KPI]
+		sortByColumn: 'Margin KPI Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Margin KPI Order'
+		isHidden
+		formatString: 0
+		lineageTag: be6e40c3-4d74-58f6-bfd8-6f358cc18cb5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Margin KPI Order]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Margin KPI' = calculated
+		mode: import
+		source = DATATABLE ( "Margin KPI", STRING, "Margin KPI Order", INTEGER, { { "Gross Profit Margin", 0 }, { "Contribution Profit Margin", 1 }, { "EBITDA Margin", 2 } } )
+

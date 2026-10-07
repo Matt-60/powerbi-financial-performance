@@ -1,0 +1,17 @@
+/// Helper set by the Budget item of the Comparison calculation group; read by the base measures.
+table Scenario
+	isHidden
+	lineageTag: 2a39aff7-090f-546f-8f7f-d9f9664ad3ca
+
+	column Scenario
+		lineageTag: 242e5165-58fa-5dc7-bfce-d77c470e2deb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Scenario]
+
+		annotation SummarizationSetBy = User
+
+	partition Scenario = calculated
+		mode: import
+		source = DATATABLE ( "Scenario", STRING, { { "Actual" }, { "Budget" } } )
+

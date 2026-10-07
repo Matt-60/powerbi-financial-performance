@@ -1,0 +1,114 @@
+/// Margins and the KPI-card logic for the Margin KPI slicer.
+table 'Margin KPI Measures'
+	lineageTag: b5e3e84e-8506-591f-b35a-5eeb6253b914
+
+	measure 'Gross Profit Margin' = DIVIDE ( [Gross Profit], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Margins
+		lineageTag: 16a9523c-d72a-5999-8888-698413af6f1a
+
+	measure 'Contribution Profit Margin' = DIVIDE ( [Contribution Profit], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Margins
+		lineageTag: eaf53d1f-d489-561a-a2b9-4aaebdd2cd3c
+
+	measure 'EBITDA Margin' = DIVIDE ( [EBITDA], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Margins
+		lineageTag: d66e33b7-007e-56fd-812c-3d5fc123d2bb
+
+	measure 'Gross Profit Margin PY' = CALCULATE ( [Gross Profit Margin], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 21607bdf-0fef-53b1-99a4-ae4ed0665396
+
+	measure 'Gross Profit Margin Budget' = CALCULATE ( [Gross Profit Margin], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 4664c0d3-f37e-5397-ad2e-6915a4c32136
+
+	measure 'Contribution Profit Margin PY' = CALCULATE ( [Contribution Profit Margin], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 3034b617-b9fd-5d2f-8f26-af7c0cd95182
+
+	measure 'Contribution Profit Margin Budget' = CALCULATE ( [Contribution Profit Margin], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 5d135b98-4e8c-5ab6-8a29-6f735be31d4c
+
+	measure 'EBITDA Margin PY' = CALCULATE ( [EBITDA Margin], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: bfbddea8-ab56-58a0-ab13-00dc19e385cd
+
+	measure 'EBITDA Margin Budget' = CALCULATE ( [EBITDA Margin], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 936b00b0-10b2-57ec-a62b-b4183ebdb36f
+
+	measure 'Margin KPI Value' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Margin KPI'[Margin KPI] ),
+			    "Gross Profit Margin", [Gross Profit Margin],
+			    "Contribution Profit Margin", [Contribution Profit Margin],
+			    "EBITDA Margin", [EBITDA Margin]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 KPI card
+		lineageTag: afc4ed4b-2349-5aff-a415-c72e2d6ba802
+
+	measure 'Margin KPI vs Previous Period %' =
+			VAR _change = CALCULATE ( [Margin KPI Value], 'Comparison'[Comparison] = "Var % vs Previous Period" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: 71684d6a-ff39-598c-8122-35c63d4567bc
+
+	measure 'Margin KPI vs Previous Period Color' =
+			VAR _change = CALCULATE ( [Margin KPI Value], 'Comparison'[Comparison] = "Var % vs Previous Period" )
+			RETURN
+			    SWITCH ( TRUE (), _change > 0, "Green", _change < 0, "Red" )
+		displayFolder: 3 KPI card
+		lineageTag: 9a9c2345-2e4b-58a7-a0dd-831b67d9ada9
+
+	measure 'Margin KPI vs Benchmark %' =
+			VAR _change = CALCULATE ( [Margin KPI Value], 'Comparison'[Comparison] = "Var % vs Benchmark" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: 7edb311f-2277-59eb-8cd0-daa460d15b05
+
+	measure 'Margin KPI vs Benchmark Color' =
+			VAR _change = CALCULATE ( [Margin KPI Value], 'Comparison'[Comparison] = "Var % vs Benchmark" )
+			RETURN
+			    SWITCH ( TRUE (), _change > 0, "Green", _change < 0, "Red" )
+		displayFolder: 3 KPI card
+		lineageTag: d556ec27-eae7-58b5-afbb-f5061b4ba5c7
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 703ba965-7437-5664-9fe8-a3ae4790d360
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Margin KPI Measures' = calculated
+		mode: import
+		source = Row ( "Column", BLANK () )
+

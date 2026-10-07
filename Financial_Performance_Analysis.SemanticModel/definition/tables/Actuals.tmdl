@@ -1,0 +1,189 @@
+/// Monthly actuals per account (posting lines only). Grain: account x month.
+table Actuals
+	lineageTag: 69311e6d-2231-524e-9540-3222104a321e
+
+	/// Unsigned amount of posting lines for the active scenario (Actual / Budget).
+	measure 'Posted Amount' =
+			VAR _isBudget = SELECTEDVALUE ( Scenario[Scenario], "Actual" ) = "Budget"
+			VAR _accountLevel =
+			    ISFILTERED ( 'Account'[Account] ) || ISFILTERED ( 'Account'[Account Number] ) || ISFILTERED ( 'Account'[Market] )
+			RETURN
+			    IF (
+			        _isBudget,
+			        // budget exists per cost group only: virtual relationship via TREATAS, blank below cost-group level
+			        IF (
+			            NOT _accountLevel,
+			            CALCULATE ( SUM ( Budget[Value] ), TREATAS ( VALUES ( 'Account'[Group Key] ), Budget[Group Key] ) )
+			        ),
+			        SUM ( Actuals[Value] )
+			    )
+		formatString: #,0
+		isHidden
+		displayFolder: Base
+		lineageTag: def7f081-b545-524d-a995-1e4596eed87d
+
+	/// Net result (revenue minus costs) of the posting lines in context.
+	measure 'Signed Amount' =
+			VAR _isBudget = SELECTEDVALUE ( Scenario[Scenario], "Actual" ) = "Budget"
+			VAR _accountLevel =
+			    ISFILTERED ( 'Account'[Account] ) || ISFILTERED ( 'Account'[Account Number] ) || ISFILTERED ( 'Account'[Market] )
+			RETURN
+			    IF (
+			        _isBudget,
+			        IF (
+			            NOT _accountLevel,
+			            CALCULATE (
+			                SUMX ( Budget, Budget[Value] * Budget[Sign] ),
+			                TREATAS ( VALUES ( 'Account'[Group Key] ), Budget[Group Key] )
+			            )
+			        ),
+			        SUMX ( Actuals, Actuals[Value] * Actuals[Sign] )
+			    )
+		formatString: #,0
+		isHidden
+		displayFolder: Base
+		lineageTag: 9530d52d-b1f2-5142-8b47-eaac229e49a7
+
+	/// P&L amount. Single line: its amount (subtotals calculated). Several lines / total: net result.
+	measure Actuals =
+			// one P&L line in context: posting lines show their (positive) amount, subtotal lines are calculated
+			// several lines in context (e.g. grand total): net result = revenue minus costs
+			IF (
+			    HASONEVALUE ( 'Account'[P&L Line] ),
+			    SWITCH (
+			        VALUES ( 'Account'[P&L Line] ),
+			        "C. Gross Profit", CALCULATE ( [Signed Amount], REMOVEFILTERS ( 'Account'[P&L Line], 'Account'[Cost Group], 'Account'[Account], 'Account'[Account Number], 'Account'[Group Key], 'Account'[Line Kind] ), 'Account'[P&L Line] IN { "A. Revenue", "B. COGS" } ),
+			        "E. Contribution Profit", CALCULATE ( [Signed Amount], REMOVEFILTERS ( 'Account'[P&L Line], 'Account'[Cost Group], 'Account'[Account], 'Account'[Account Number], 'Account'[Group Key], 'Account'[Line Kind] ), 'Account'[P&L Line] IN { "A. Revenue", "B. COGS", "D. Variable Costs" } ),
+			        "G. EBITDA", CALCULATE ( [Signed Amount], REMOVEFILTERS ( 'Account'[P&L Line], 'Account'[Cost Group], 'Account'[Account], 'Account'[Account Number], 'Account'[Group Key], 'Account'[Line Kind] ), 'Account'[P&L Line] IN { "A. Revenue", "B. COGS", "D. Variable Costs", "F. OPEX" } ),
+			        [Posted Amount]
+			    ),
+			    [Signed Amount]
+			)
+		formatString: #,0
+		displayFolder: Overview
+		lineageTag: 4ddea48b-81f6-5c69-a694-37e1c14376f1
+
+	/// Actuals for the period type selected in the MTD / QTD / YTD slicer.
+	measure 'Actuals By Period' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Period Type'[Period Type] ),
+			    "MTD", CALCULATE ( [Actuals], DATESMTD ( 'Date'[Date] ) ),
+			    "QTD", CALCULATE ( [Actuals], DATESQTD ( 'Date'[Date] ) ),
+			    "YTD", CALCULATE ( [Actuals], DATESYTD ( 'Date'[Date] ) ),
+			    [Actuals]
+			)
+		formatString: #,0
+		displayFolder: Overview
+		lineageTag: 05a54733-f00f-5323-bfab-2e8b5fb8e2ed
+
+	/// Prior-year value of [Actuals By Period] (calculation group item PY).
+	measure 'PY By Period' = CALCULATE ( [Actuals By Period], 'Comparison'[Comparison] = "PY" )
+		formatString: #,0
+		displayFolder: Overview
+		lineageTag: 29e79b49-e5c5-5a4b-85f2-d426aa50fea1
+
+	/// Index: actuals as % of the same period last year (100% = flat).
+	measure 'YoY %' = DIVIDE ( [Actuals], CALCULATE ( [Actuals], 'Comparison'[Comparison] = "PY" ) )
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: 46a776de-23b1-5d17-bf87-f1f3ceb78c66
+
+	/// Index: actuals as % of the previous month (100% = flat).
+	measure 'MoM %' = DIVIDE ( [Actuals], CALCULATE ( [Actuals], DATEADD ( 'Date'[Date], -1, MONTH ) ) )
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: 9971e044-8719-5a5b-947b-954c466b3c37
+
+	/// Amount as a share of revenue.
+	measure '% Revenue' =
+			DIVIDE (
+			    [Actuals],
+			    CALCULATE (
+			        [Actuals],
+			        REMOVEFILTERS ( 'Account'[P&L Line], 'Account'[Cost Group], 'Account'[Account], 'Account'[Account Number], 'Account'[Group Key], 'Account'[Line Kind] ),
+			        'Account'[P&L Line] = "A. Revenue"
+			    )
+			)
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: 860bdb71-d903-59ac-a488-37ae00549bcc
+
+	/// Share of the parent level: account within cost group, cost group within P&L line.
+	measure 'Structure %' =
+			SWITCH (
+			    TRUE (),
+			    ISINSCOPE ( 'Account'[Account] ),
+			        DIVIDE ( [Actuals], CALCULATE ( [Actuals], REMOVEFILTERS ( 'Account'[Account], 'Account'[Account Number] ) ) ),
+			    ISINSCOPE ( 'Account'[Cost Group] ),
+			        DIVIDE ( [Actuals], CALCULATE ( [Actuals], REMOVEFILTERS ( 'Account'[Cost Group], 'Account'[Group Key] ) ) )
+			)
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: 22492ee1-814a-5835-b0de-5f27524e32a2
+
+	/// Relative deviation of actuals from budget.
+	measure '% Variance to Budget' = DIVIDE ( [Actuals] - [Budget], [Budget] )
+		formatString: 0%;-0%;0%
+		displayFolder: Overview
+		lineageTag: f3b611ea-343a-5872-8b24-cad9b7dac2de
+
+	column 'Account Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 143e8ebf-0f50-5b58-a2b0-7e9a195e3163
+		summarizeBy: none
+		sourceColumn: Account Number
+
+		annotation SummarizationSetBy = User
+
+	column Period
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 787beea9-84d4-5fbb-88e4-f177a079554f
+		summarizeBy: none
+		sourceColumn: Period
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Value
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 2310f7bd-f0c0-51c2-974b-cdca3beacbde
+		summarizeBy: none
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = User
+
+	column Sign
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 87a77c50-a68c-5dbb-88c4-a1cef8ec2832
+		summarizeBy: none
+		sourceColumn: Sign
+
+		annotation SummarizationSetBy = User
+
+	partition Actuals = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(SourceFile), null, true),
+				    ActualsTable = Source{[Item="Actuals",Kind="Table"]}[Data],
+				    // subtotal lines (Gross Profit, Contribution Profit, EBITDA) have no account and are calculated in DAX - not stored as facts
+				    PostingLines = Table.SelectRows(ActualsTable, each [Account] <> null),
+				    Unpivoted = Table.UnpivotOtherColumns(PostingLines, {"Account", "Name", "Type", "Type1"}, "Period", "Value"),
+				    PeriodToDate = Table.TransformColumns(Unpivoted, {{"Period", each Date.FromText(_ & "-01", [Format="yyyy-MM-dd", Culture="en-US"]), type date}}),
+				    // source stores costs as positive amounts; the sign is used only to build the net result (EBITDA etc.)
+				    AddedSign = Table.AddColumn(PeriodToDate, "Sign", each if [Type] = "A. Revenue" then 1 else -1, Int64.Type),
+				    Selected = Table.SelectColumns(AddedSign, {"Account", "Period", "Value", "Sign"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"Account", Int64.Type}, {"Value", type number}}),
+				    Renamed = Table.RenameColumns(Typed, {{"Account", "Account Number"}})
+				in
+				    Renamed
+

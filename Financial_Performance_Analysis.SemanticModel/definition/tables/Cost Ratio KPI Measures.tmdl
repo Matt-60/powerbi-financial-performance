@@ -1,0 +1,130 @@
+/// Cost-to-revenue ratios and the KPI-card logic for the Cost Ratio KPI slicer (lower is better).
+table 'Cost Ratio KPI Measures'
+	lineageTag: 8cf22301-e134-5799-9fac-e8c1e4ad54cd
+
+	measure 'Costs to Revenue Ratio' = DIVIDE ( [Total Costs], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Ratios
+		lineageTag: c5440f43-653c-596a-8103-77b3172093f0
+
+	measure 'COGS Ratio' = DIVIDE ( [COGS], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Ratios
+		lineageTag: 8a759439-3fca-571b-b361-bd6f9574ccc6
+
+	measure 'Variable Costs Ratio' = DIVIDE ( [Variable Costs], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Ratios
+		lineageTag: 4a2299eb-f619-50c2-ba1a-f08e30d8191b
+
+	measure 'OPEX Ratio' = DIVIDE ( [OPEX], [Revenue] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 1 Ratios
+		lineageTag: eb39e4a6-d4c9-55d1-9c45-9dd36068db20
+
+	measure 'Costs to Revenue Ratio PY' = CALCULATE ( [Costs to Revenue Ratio], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 70bd3a5b-f74a-5049-b166-05ba100bb366
+
+	measure 'Costs to Revenue Ratio Budget' = CALCULATE ( [Costs to Revenue Ratio], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: b3d5017d-a111-5164-bbef-7a83a7ddb615
+
+	measure 'COGS Ratio PY' = CALCULATE ( [COGS Ratio], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 3eb44f5d-f2e7-59c1-b528-b4c1cea83753
+
+	measure 'COGS Ratio Budget' = CALCULATE ( [COGS Ratio], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: cb1e030b-b12b-5108-a785-a5c9c3e56101
+
+	measure 'Variable Costs Ratio PY' = CALCULATE ( [Variable Costs Ratio], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 37e22dc3-04a0-5e39-9913-ad19a2426b34
+
+	measure 'Variable Costs Ratio Budget' = CALCULATE ( [Variable Costs Ratio], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: f258efbf-0fb4-577a-b53e-6abefa73913c
+
+	measure 'OPEX Ratio PY' = CALCULATE ( [OPEX Ratio], 'Comparison'[Comparison] = "PY" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 68c3521f-a8c6-5ed5-82a9-6ca3d7252814
+
+	measure 'OPEX Ratio Budget' = CALCULATE ( [OPEX Ratio], 'Comparison'[Comparison] = "Budget" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 2 PY & Budget
+		lineageTag: 85c05efd-a5f0-53ca-aa71-a800b5585a67
+
+	measure 'Cost Ratio KPI Value' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Cost Ratio KPI'[Cost Ratio KPI] ),
+			    "Costs to Revenue Ratio", [Costs to Revenue Ratio],
+			    "COGS ratio", [COGS Ratio],
+			    "Variable Costs ratio", [Variable Costs Ratio],
+			    "OPEX ratio", [OPEX Ratio]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 KPI card
+		lineageTag: 77d7b35d-cd7a-5111-a5de-9cc72d2d490a
+
+	measure 'Cost Ratio KPI vs Previous Period %' =
+			VAR _change = CALCULATE ( [Cost Ratio KPI Value], 'Comparison'[Comparison] = "Var % vs Previous Period" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: 2a531f83-f112-596a-b2d0-a637b9272a00
+
+	measure 'Cost Ratio KPI vs Previous Period Color' =
+			VAR _change = CALCULATE ( [Cost Ratio KPI Value], 'Comparison'[Comparison] = "Var % vs Previous Period" )
+			RETURN
+			    SWITCH ( TRUE (), _change > 0, "Red", _change < 0, "Green" )
+		displayFolder: 3 KPI card
+		lineageTag: 9179da0c-a643-57e3-82fb-28d8dafcab30
+
+	measure 'Cost Ratio KPI vs Benchmark %' =
+			VAR _change = CALCULATE ( [Cost Ratio KPI Value], 'Comparison'[Comparison] = "Var % vs Benchmark" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: a730d331-b998-5364-b8f7-c724785d3f6c
+
+	measure 'Cost Ratio KPI vs Benchmark Color' =
+			VAR _change = CALCULATE ( [Cost Ratio KPI Value], 'Comparison'[Comparison] = "Var % vs Benchmark" )
+			RETURN
+			    SWITCH ( TRUE (), _change > 0, "Red", _change < 0, "Green" )
+		displayFolder: 3 KPI card
+		lineageTag: e3704f83-362b-5762-8ef7-4dfd1a6971a2
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: a1ec2194-db17-5f7b-a1b4-191e9f2609f4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Cost Ratio KPI Measures' = calculated
+		mode: import
+		source = Row ( "Column", BLANK () )
+

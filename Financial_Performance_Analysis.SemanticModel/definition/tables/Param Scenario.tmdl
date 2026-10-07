@@ -1,0 +1,48 @@
+/// Field parameter: Actual / PY / Budget series.
+table 'Param Scenario'
+	lineageTag: 2bf1b6f8-42cc-5437-bbcc-b95a59ec909f
+
+	column 'Scenario Series'
+		lineageTag: 0dca5921-f981-53a6-963c-d291c2f76f6b
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Scenario Series Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Scenario Series Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Scenario Series Fields'
+		isHidden
+		lineageTag: 7fa57933-415f-542d-8b02-117f981b8199
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Scenario Series Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'Scenario Series Order'
+		isHidden
+		formatString: 0
+		lineageTag: c40d0a74-2515-5e03-a0f3-dcc429ff486f
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param Scenario' = calculated
+		mode: import
+		source =
+				{
+				    ("Actuals by Period", NAMEOF ( 'Actuals'[Actuals By Period] ), 0 ),
+				    ("PY", NAMEOF ( 'Actuals'[PY By Period] ), 1 ),
+				    ("Budget", NAMEOF ( 'Budget'[Budget By Period] ), 2 )
+				}
+

@@ -1,0 +1,27 @@
+/// Slicer: benchmark for the KPI cards (prior year or budget).
+table Benchmark
+	lineageTag: a4d06c69-99fa-56a7-b68d-3054aa41576e
+
+	column Benchmark
+		lineageTag: f5a53456-839c-53da-b6d3-b4eb2faddbe5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Benchmark]
+		sortByColumn: 'Benchmark Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Benchmark Order'
+		isHidden
+		formatString: 0
+		lineageTag: 14705274-18d6-52ab-b94a-02b4f0c7779b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Benchmark Order]
+
+		annotation SummarizationSetBy = User
+
+	partition Benchmark = calculated
+		mode: import
+		source = DATATABLE ( "Benchmark", STRING, "Benchmark Order", INTEGER, { { "PY", 0 }, { "Budget", 1 } } )
+

@@ -1,0 +1,76 @@
+/// Calculation group: applies PY / Budget / previous-period logic to any measure. Each item removes its own filter so nested measures are not shifted twice.
+table Comparison
+	lineageTag: b4927b0f-6eb4-5501-b86f-cd1f4b7dc85e
+
+	calculationGroup
+		precedence: 10
+
+		calculationItem Actual = SELECTEDMEASURE ()
+
+		calculationItem PY = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+		calculationItem Budget = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), Scenario[Scenario] = "Budget" )
+
+		calculationItem 'Selected Benchmark' =
+				SWITCH (
+				    SELECTEDVALUE ( 'Benchmark'[Benchmark] ),
+				    "PY", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), SAMEPERIODLASTYEAR ( 'Date'[Date] ) ),
+				    "Budget", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), Scenario[Scenario] = "Budget" )
+				)
+
+		calculationItem 'Previous Period' =
+				SWITCH (
+				    SELECTEDVALUE ( 'Period Type'[Period Type] ),
+				    "MTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -1, MONTH ) ),
+				    "QTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -3, MONTH ) ),
+				    "YTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -1, YEAR ) )
+				)
+
+		calculationItem 'Var % vs Benchmark' =
+				VAR _current = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ) )
+				VAR _benchmark =
+				    SWITCH (
+				        SELECTEDVALUE ( 'Benchmark'[Benchmark] ),
+				        "PY", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), SAMEPERIODLASTYEAR ( 'Date'[Date] ) ),
+				        "Budget", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), Scenario[Scenario] = "Budget" )
+				    )
+				RETURN
+				    DIVIDE ( _current - _benchmark, _benchmark )
+
+			formatStringDefinition = "0.0%"
+
+		calculationItem 'Var % vs Previous Period' =
+				VAR _current = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ) )
+				VAR _previous =
+				    SWITCH (
+				        SELECTEDVALUE ( 'Period Type'[Period Type] ),
+				        "MTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -1, MONTH ) ),
+				        "QTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -3, MONTH ) ),
+				        "YTD", CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( 'Comparison'[Comparison] ), DATEADD ( 'Date'[Date], -1, YEAR ) )
+				    )
+				RETURN
+				    DIVIDE ( _current - _previous, _previous )
+
+			formatStringDefinition = "0.0%"
+
+	column Comparison
+		dataType: string
+		lineageTag: 985a4dd7-4d1e-5741-aa93-326d1dcbeadd
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Ordinal
+
+		annotation SummarizationSetBy = User
+
+	column Ordinal
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 334a433a-3b13-590f-8766-8ed7f01f9038
+		summarizeBy: sum
+		sourceColumn: Ordinal
+
+		annotation SummarizationSetBy = User
+
+	partition Comparison = calculationGroup
+

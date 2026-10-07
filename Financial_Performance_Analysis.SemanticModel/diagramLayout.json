@@ -1,0 +1,308 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 295.20507366988613,
+            "y": 57.845758829393873
+          },
+          "nodeIndex": "Actuals",
+          "nodeLineageTag": "69311e6d-2231-524e-9540-3222104a321e",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136.5768771657797,
+            "y": 192.043548382727
+          },
+          "nodeIndex": "Amount KPI Measures",
+          "nodeLineageTag": "6435b88b-c625-5a6b-add9-aaa98baa9f04",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 860.05941316577969,
+            "y": 3.5431220000000003
+          },
+          "nodeIndex": "Budget",
+          "nodeLineageTag": "6b32bc7d-1ff5-53fc-bc8b-de7064cf97e2",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420.5768771657797,
+            "y": 178.043548382727
+          },
+          "nodeIndex": "Cost Ratio KPI Measures",
+          "nodeLineageTag": "8cf22301-e134-5799-9fac-e8c1e4ad54cd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1704.5768771657797,
+            "y": 178.043548382727
+          },
+          "nodeIndex": "Margin KPI Measures",
+          "nodeLineageTag": "b5e3e84e-8506-591f-b35a-5eeb6253b914",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1988.5768771657797,
+            "y": 178.043548382727
+          },
+          "nodeIndex": "P&L Measures",
+          "nodeLineageTag": "f4945c87-3491-585a-8c1f-fd985bfa7fa4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2272.5768771657795,
+            "y": 178.043548382727
+          },
+          "nodeIndex": "Titles",
+          "nodeLineageTag": "ad8f88ea-6f30-5730-93f3-bf43fcc16a19",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 406.72109776545386
+          },
+          "nodeIndex": "Account",
+          "nodeLineageTag": "6a58d972-ac92-5668-8013-731c578f6be7",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2556.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Amount KPI",
+          "nodeLineageTag": "af9a449d-8d97-55fe-a9c1-eb5020a6eb32",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2840.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Benchmark",
+          "nodeLineageTag": "a4d06c69-99fa-56a7-b68d-3054aa41576e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3124.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Comparison",
+          "nodeLineageTag": "b4927b0f-6eb4-5501-b86f-cd1f4b7dc85e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3408.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Cost Ratio KPI",
+          "nodeLineageTag": "bf98cf0e-0017-5987-9156-5935493459b0",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 641.40674820037066,
+            "y": 431.01558130717382
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "36deb705-879f-5482-af52-af4c392f8dd3",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3692.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Margin KPI",
+          "nodeLineageTag": "5099987b-ebf1-5e69-8ba6-865d14015405",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3976.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param Account Level",
+          "nodeLineageTag": "a2296068-9234-58d3-9d57-3dac497ae0c4",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4260.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param Date Level",
+          "nodeLineageTag": "8021dcb4-c76d-5a20-a22a-700df929d847",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4544.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param KPI Metric",
+          "nodeLineageTag": "919e3440-7144-5e79-a98c-effb42eb8a0c",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4828.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param KPI Scenario Metric",
+          "nodeLineageTag": "c05d9a35-e54e-5804-9f64-a9fb96a4e6cd",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5112.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param Overview Metric",
+          "nodeLineageTag": "ffd22970-5683-5b4c-93e1-26e9eda9fea8",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5396.5768771657795,
+            "y": 252.043548382727
+          },
+          "nodeIndex": "Param Scenario",
+          "nodeLineageTag": "2bf1b6f8-42cc-5437-bbcc-b95a59ec909f",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5680.5768771657795,
+            "y": 264.043548382727
+          },
+          "nodeIndex": "Period Type",
+          "nodeLineageTag": "0e41e103-3efd-5d79-be99-021be05a72f1",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5964.5768771657795,
+            "y": 228.043548382727
+          },
+          "nodeIndex": "Scenario",
+          "nodeLineageTag": "2a39aff7-090f-546f-8f7f-d9f9664ad3ca",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 70,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

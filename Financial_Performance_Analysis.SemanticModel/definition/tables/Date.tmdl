@@ -1,0 +1,102 @@
+/// Calendar generated from the dates in the model (CALENDARAUTO).
+table Date
+	lineageTag: 36deb705-879f-5482-af52-af4c392f8dd3
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: Short Date
+		lineageTag: 05610592-399b-5766-8d7d-0254e49cade7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = User
+
+	column Year
+		formatString: 0
+		lineageTag: 28ed5f96-2fbd-54d9-9f64-a4e929c0fcfe
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = User
+
+	column 'Month Number'
+		isHidden
+		formatString: 0
+		lineageTag: 0cc90829-954d-5920-b0d0-4a0eab5f5f59
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = User
+
+	column Month
+		lineageTag: 297b63a6-eff0-5e16-8882-e3d0c4553ab0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = User
+
+	column Year-Month
+		lineageTag: ed22f9ad-1798-5abc-a9c4-bdd3655789a8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year-Month]
+
+		annotation SummarizationSetBy = User
+
+	column Quarter
+		lineageTag: f1c37262-e1fb-53de-a6e7-a3a2d6f9f651
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = User
+
+	column Day
+		formatString: 0
+		lineageTag: 5cf4c142-f6ac-5990-8024-7d46ca9a3e6e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day]
+
+		annotation SummarizationSetBy = User
+
+	column 'Month short'
+		lineageTag: b738346d-e7c9-58fc-b75b-f081757ecc86
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month short]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = User
+
+	column EndOfMonthDate
+		isHidden
+		formatString: Short Date
+		lineageTag: ee222041-6391-57ce-bdee-2187370518ef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [EndOfMonthDate]
+
+		annotation SummarizationSetBy = User
+
+	partition Date = calculated
+		mode: import
+		source =
+				ADDCOLUMNS (
+				    CALENDARAUTO (),
+				    "Year", YEAR ( [Date] ),
+				    "Month Number", MONTH ( [Date] ),
+				    "Month", FORMAT ( [Date], "MMMM", "en-US" ),
+				    "Year-Month", FORMAT ( [Date], "YYYY-MM" ),
+				    "Quarter", "Q" & FORMAT ( [Date], "Q" ),
+				    "Day", DAY ( [Date] ),
+				    "Month short", FORMAT ( [Date], "MMM", "en-US" ),
+				    "EndOfMonthDate", EOMONTH ( [Date], 0 )
+				)
+

@@ -1,0 +1,40 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: pl-PL
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["SourceFile","Actuals","Budget","Account"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Actuals
+ref table Budget
+ref table Account
+ref table Date
+ref table Scenario
+ref table Comparison
+ref table 'Period Type'
+ref table Benchmark
+ref table 'Amount KPI'
+ref table 'Margin KPI'
+ref table 'Cost Ratio KPI'
+ref table 'P&L Measures'
+ref table 'Amount KPI Measures'
+ref table 'Margin KPI Measures'
+ref table 'Cost Ratio KPI Measures'
+ref table Titles
+ref table 'Param Account Level'
+ref table 'Param Date Level'
+ref table 'Param Overview Metric'
+ref table 'Param KPI Scenario Metric'
+ref table 'Param Scenario'
+ref table 'Param KPI Metric'
+
+ref cultureInfo en-US
+

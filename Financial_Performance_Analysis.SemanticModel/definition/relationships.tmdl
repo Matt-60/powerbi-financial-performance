@@ -1,0 +1,12 @@
+relationship e6138449-6f9a-5a1d-b8b5-2b8a26b66616
+	fromColumn: Actuals.Period
+	toColumn: Date.Date
+
+relationship 8959f6ed-b0f3-58b5-aa13-7c9f9ce55669
+	fromColumn: Budget.Period
+	toColumn: Date.Date
+
+relationship 991b45b4-043f-5700-931f-8cf6e60c3665
+	fromColumn: Actuals.'Account Number'
+	toColumn: Account.'Account Number'
+

@@ -1,0 +1,58 @@
+/// P&L lines for the selected period type (MTD / QTD / YTD).
+table 'P&L Measures'
+	lineageTag: f4945c87-3491-585a-8c1f-fd985bfa7fa4
+
+	measure Revenue = CALCULATE ( [Actuals By Period], 'Account'[P&L Line] = "A. Revenue" )
+		formatString: #,0
+		displayFolder: 1 Lines
+		lineageTag: 5ae8856e-f5ef-58ad-ace4-c6fddfffdb88
+
+	measure COGS = CALCULATE ( [Actuals By Period], 'Account'[P&L Line] = "B. COGS" )
+		formatString: #,0
+		displayFolder: 1 Lines
+		lineageTag: ae6f7176-34cb-56c9-9b5d-82eae5261722
+
+	measure 'Variable Costs' = CALCULATE ( [Actuals By Period], 'Account'[P&L Line] = "D. Variable Costs" )
+		formatString: #,0
+		displayFolder: 1 Lines
+		lineageTag: af91eee3-6687-5d20-be40-81da4d8d30c1
+
+	measure OPEX = CALCULATE ( [Actuals By Period], 'Account'[P&L Line] = "F. OPEX" )
+		formatString: #,0
+		displayFolder: 1 Lines
+		lineageTag: d330edf0-421e-58f7-a40b-96d5063c43f2
+
+	measure 'Gross Profit' = [Revenue] - [COGS]
+		formatString: #,0
+		displayFolder: 2 Results
+		lineageTag: 44844b4b-1a54-5597-b260-0aff600a878d
+
+	measure 'Contribution Profit' = [Gross Profit] - [Variable Costs]
+		formatString: #,0
+		displayFolder: 2 Results
+		lineageTag: bf681f0e-9110-57bb-8ae8-084e6b6f14fa
+
+	measure EBITDA = [Contribution Profit] - [OPEX]
+		formatString: #,0
+		displayFolder: 2 Results
+		lineageTag: 1f0baef1-5749-50a3-85b9-8954c6b39fd4
+
+	measure 'Total Costs' = [COGS] + [Variable Costs] + [OPEX]
+		formatString: #,0
+		displayFolder: 1 Lines
+		lineageTag: e714daac-42cb-58e3-b857-60be9fee2304
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: bdf558ea-21a7-55a7-ac42-2edd1437de62
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = User
+
+	partition 'P&L Measures' = calculated
+		mode: import
+		source = Row ( "Column", BLANK () )
+

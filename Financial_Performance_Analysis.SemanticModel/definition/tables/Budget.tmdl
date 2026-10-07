@@ -1,0 +1,72 @@
+/// Monthly budget per cost group (P&L line / Type1). No relationship to Account - filtered via TREATAS.
+table Budget
+	lineageTag: 6b32bc7d-1ff5-53fc-bc8b-de7064cf97e2
+
+	/// Budget with the same P&L logic as [Actuals]. Blank at account / market level (budget is planned per cost group).
+	measure Budget = CALCULATE ( [Actuals], 'Comparison'[Comparison] = "Budget" )
+		formatString: #,0
+		lineageTag: 58bcf1dd-4f22-5d96-b801-ff6a69c751b9
+
+	/// Budget for the selected MTD / QTD / YTD period type.
+	measure 'Budget By Period' = CALCULATE ( [Actuals By Period], 'Comparison'[Comparison] = "Budget" )
+		formatString: #,0
+		lineageTag: 903874e4-3722-58b6-a69d-cbfaa1979a94
+
+	column 'Group Key'
+		dataType: string
+		isHidden
+		lineageTag: fe8fe92c-934b-52d1-9c1c-3580213e1944
+		summarizeBy: none
+		sourceColumn: Group Key
+
+		annotation SummarizationSetBy = User
+
+	column Period
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 1529d1b1-6b3e-53f5-8173-386394661f97
+		summarizeBy: none
+		sourceColumn: Period
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Value
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: ee8bcff6-8715-5809-a572-ec75f1ec38b2
+		summarizeBy: none
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = User
+
+	column Sign
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5ca65de4-c0f2-5203-852d-bf1c1f94d37b
+		summarizeBy: none
+		sourceColumn: Sign
+
+		annotation SummarizationSetBy = User
+
+	partition Budget = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(SourceFile), null, true),
+				    BudgetTable = Source{[Item="Budget",Kind="Table"]}[Data],
+				    // budget is planned per cost group (Type1), not per account; subtotal lines are calculated in DAX
+				    PostingGroups = Table.SelectRows(BudgetTable, each not List.Contains({"C. Gross Profit", "E. Contribution Profit", "G. EBITDA"}, [Type])),
+				    AddedGroupKey = Table.AddColumn(PostingGroups, "Group Key", each [Type] & " | " & (if [Type1] = null then "" else [Type1]), type text),
+				    AddedSign = Table.AddColumn(AddedGroupKey, "Sign", each if [Type] = "A. Revenue" then 1 else -1, Int64.Type),
+				    Unpivoted = Table.UnpivotOtherColumns(AddedSign, {"Type", "Type1", "Group Key", "Sign"}, "Period", "Value"),
+				    PeriodToDate = Table.TransformColumns(Unpivoted, {{"Period", each Date.FromText(_ & "-01", [Format="yyyy-MM-dd", Culture="en-US"]), type date}}),
+				    Selected = Table.SelectColumns(PeriodToDate, {"Group Key", "Period", "Value", "Sign"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"Value", type number}})
+				in
+				    Typed
+

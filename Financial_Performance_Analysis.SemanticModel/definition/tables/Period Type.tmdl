@@ -1,0 +1,27 @@
+/// Slicer: period type for the *By Period measures.
+table 'Period Type'
+	lineageTag: 0e41e103-3efd-5d79-be99-021be05a72f1
+
+	column 'Period Type'
+		lineageTag: 7347a8f4-9eac-501b-b807-848d782c34ea
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period Type]
+		sortByColumn: 'Period Type Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Period Type Order'
+		isHidden
+		formatString: 0
+		lineageTag: 51e31722-ab15-5308-8510-5e4bc0ad8c2b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period Type Order]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Period Type' = calculated
+		mode: import
+		source = DATATABLE ( "Period Type", STRING, "Period Type Order", INTEGER, { { "MTD", 0 }, { "QTD", 1 }, { "YTD", 2 } } )
+

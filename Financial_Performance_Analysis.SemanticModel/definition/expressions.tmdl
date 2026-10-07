@@ -1,0 +1,8 @@
+/// Full path to the source workbook. Change in Transform data > Edit parameters.
+expression SourceFile = "C:\Users\mkowa\Downloads\Source_Financial_Data.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 0589f363-495e-5210-b076-8297fdb3de14
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigation
+

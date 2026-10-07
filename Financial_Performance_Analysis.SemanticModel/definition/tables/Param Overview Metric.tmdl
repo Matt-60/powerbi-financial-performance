@@ -1,0 +1,52 @@
+/// Field parameter: metric in the Overview matrix.
+table 'Param Overview Metric'
+	lineageTag: ffd22970-5683-5b4c-93e1-26e9eda9fea8
+
+	column 'Overview Metric'
+		lineageTag: ea95c81a-08a8-5c9b-a3ab-6b21520e6e67
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Overview Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Overview Metric Fields'
+
+		annotation SummarizationSetBy = User
+
+	column 'Overview Metric Fields'
+		isHidden
+		lineageTag: 08a45324-ec94-53cb-8656-bd12f6e55839
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Overview Metric Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = User
+
+	column 'Overview Metric Order'
+		isHidden
+		formatString: 0
+		lineageTag: 50893d98-8622-5c93-b7c3-c9f3cdf21df8
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Param Overview Metric' = calculated
+		mode: import
+		source =
+				{
+				    ("Actuals", NAMEOF ( 'Actuals'[Actuals] ), 0 ),
+				    ("Budget", NAMEOF ( 'Budget'[Budget] ), 1 ),
+				    ("% Revenue", NAMEOF ( 'Actuals'[% Revenue] ), 2 ),
+				    ("YoY %", NAMEOF ( 'Actuals'[YoY %] ), 3 ),
+				    ("MoM %", NAMEOF ( 'Actuals'[MoM %] ), 4 ),
+				    ("% Variance to Budget", NAMEOF ( 'Actuals'[% Variance to Budget] ), 5 ),
+				    ("Structure %", NAMEOF ( 'Actuals'[Structure %] ), 6 )
+				}
+

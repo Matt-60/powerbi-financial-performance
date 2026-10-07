@@ -1,0 +1,27 @@
+/// Slicer: amount shown on the KPI page.
+table 'Amount KPI'
+	lineageTag: af9a449d-8d97-55fe-a9c1-eb5020a6eb32
+
+	column 'Amount KPI'
+		lineageTag: f3f42e21-50c5-514b-a3cd-4385cb6907f0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Amount KPI]
+		sortByColumn: 'Amount KPI Order'
+
+		annotation SummarizationSetBy = User
+
+	column 'Amount KPI Order'
+		isHidden
+		formatString: 0
+		lineageTag: 134f4714-fa72-559f-9f47-534a465c01ab
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Amount KPI Order]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Amount KPI' = calculated
+		mode: import
+		source = DATATABLE ( "Amount KPI", STRING, "Amount KPI Order", INTEGER, { { "Revenue", 0 }, { "COGS", 1 }, { "Variable Costs", 2 }, { "OPEX", 3 } } )
+

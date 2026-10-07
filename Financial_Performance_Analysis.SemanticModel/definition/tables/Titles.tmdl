@@ -1,0 +1,49 @@
+/// Dynamic titles for cards and charts.
+table Titles
+	lineageTag: ad8f88ea-6f30-5730-93f3-bf43fcc16a19
+
+	measure 'Previous Period Card Title' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Period Type'[Period Type] ),
+			    "MTD", "vs Last Month",
+			    "QTD", "vs Last Quarter",
+			    "YTD", "vs Last Year"
+			)
+		lineageTag: 7578f280-2bce-5f0b-b570-98ff06b1cf2a
+
+	measure 'Benchmark Card Title' =
+			VAR _benchmark = SELECTEDVALUE ( 'Benchmark'[Benchmark] )
+			VAR _period = SELECTEDVALUE ( 'Period Type'[Period Type] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        _benchmark = "PY" && ISBLANK ( _period ), "vs Selected Date Last Year",
+			        _benchmark = "PY", "vs Last Year " & _period,
+			        _benchmark = "Budget" && ISBLANK ( _period ), "vs Selected Date Budget",
+			        _benchmark = "Budget", "vs Budget " & _period
+			    )
+		lineageTag: 1f08361d-3d5c-5f65-ba4f-166f63e8fba6
+
+	measure 'Chart Title Scenarios' = [Selected Categories] & " Actuals vs PY vs Budget by Period"
+		lineageTag: b96eeb18-1a85-50b0-ad05-26f02bb020f9
+
+	measure 'Chart Title YoY' = [Selected Categories] & " Current year vs Prior year changes"
+		lineageTag: 2c1612ce-cc45-588d-b44c-baca11d7bf5f
+
+	measure 'Selected Period' = "Selected date: " & FORMAT ( MIN ( 'Date'[Date] ), "yyyy-MM" ) & " - " & FORMAT ( MAX ( 'Date'[Date] ), "yyyy-MM" )
+		lineageTag: cf311fb4-9d02-5dd0-8a54-ef1b5ed53938
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 327880fe-8024-5c9d-b4bb-aa2439ecf622
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = User
+
+	partition Titles = calculated
+		mode: import
+		source = Row ( "Column", BLANK () )
+

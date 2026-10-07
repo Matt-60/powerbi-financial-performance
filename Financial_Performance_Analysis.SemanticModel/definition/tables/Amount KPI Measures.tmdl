@@ -1,0 +1,56 @@
+/// KPI-card logic for the Amount KPI slicer.
+table 'Amount KPI Measures'
+	lineageTag: 6435b88b-c625-5a6b-add9-aaa98baa9f04
+
+	measure 'Amount KPI Value' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Amount KPI'[Amount KPI] ),
+			    "Revenue", [Revenue],
+			    "COGS", [COGS],
+			    "Variable Costs", [Variable Costs],
+			    "OPEX", [OPEX]
+			)
+		formatString: #,0
+		displayFolder: 3 KPI card
+		lineageTag: 903ab320-a63b-591c-a3b9-68327cccdba9
+
+	measure 'Amount KPI vs Previous Period %' =
+			VAR _change = CALCULATE ( [Amount KPI Value], 'Comparison'[Comparison] = "Var % vs Previous Period" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: f70b5b84-14e5-53f8-aff6-8920df715319
+
+	measure 'Amount KPI vs Benchmark %' =
+			VAR _change = CALCULATE ( [Amount KPI Value], 'Comparison'[Comparison] = "Var % vs Benchmark" )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _change ), BLANK (),
+			        _change > 0, UNICHAR ( 11165 ) & " " & FORMAT ( _change, "0.0%" ),
+			        _change < 0, UNICHAR ( 11167 ) & " " & FORMAT ( _change, "0.0%" ),
+			        FORMAT ( _change, "0.0%" )
+			    )
+		displayFolder: 3 KPI card
+		lineageTag: c145fa9b-4099-5158-8d7c-e1adb9d5729e
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: aa4eb7d1-e4e3-5942-a016-c274baa164d0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = User
+
+	partition 'Amount KPI Measures' = calculated
+		mode: import
+		source = Row ( "Column", BLANK () )
+
